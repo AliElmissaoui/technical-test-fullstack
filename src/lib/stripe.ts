@@ -8,7 +8,7 @@ export default function getStripe() {
     if (!key) throw new Error("Missing STRIPE_SECRET_KEY environment variable");
 
     stripe = new Stripe(key, {
-      apiVersion: "2025-09-30.clover", // ✅ النسخة الصحيحة
+      apiVersion: "2025-09-30.clover", 
     });
   }
   return stripe;
