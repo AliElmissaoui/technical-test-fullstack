@@ -1,22 +1,18 @@
 // src/app/admin/page.tsx
 import React from "react";
 import prisma from "../../lib/prisma";
-
 export const revalidate = 0;
-
 export default async function AdminPage() {
   const payments = await prisma.payment.findMany({
     orderBy: { createdAt: "desc" },
     take: 50,
   });
-
   const total = payments.reduce((s, p) => s + p.amount, 0);
-
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          Tableau de bord — Paiements 
+          Tableau de bord — Paiements
         </h1>
 
         <div className="flex items-center justify-between bg-white shadow-sm rounded-2xl px-6 py-4 mb-8">
@@ -28,7 +24,6 @@ export default async function AdminPage() {
             Total : {(total / 100).toFixed(2)} EUR
           </p>
         </div>
-
         <div className="overflow-x-auto rounded-xl shadow">
           <table className="min-w-full bg-white border border-gray-200">
             <thead className="bg-gray-100 text-gray-700 uppercase text-sm">
@@ -39,12 +34,10 @@ export default async function AdminPage() {
                 <th className="text-left py-3 px-4">Devise</th>
                 <th className="text-left py-3 px-4">Statut</th>
                 <th className="text-left py-3 px-4">Session</th>
-                
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {payments.map((p) => (
-                
                 <tr
                   key={p.id}
                   className="hover:bg-gray-50 transition-colors duration-150"
@@ -60,20 +53,19 @@ export default async function AdminPage() {
                   </td>
                   <td className="py-3 px-4 text-gray-600">{p.currency}</td>
                   <td
-                    className={`py-3 px-4 font-medium ${
-                      p.status === "paid"
+                    className={`py-3 px-4 font-medium ${p.status === "paid"
                         ? "text-green-600"
                         : p.status === "pending"
-                        ? "text-yellow-600"
-                        : "text-red-600"
-                    }`}
+                          ? "text-yellow-600"
+                          : "text-red-600"
+                      }`}
                   >
                     {p.status}
                   </td>
                   <td className="py-3 px-4 text-gray-500">
                     {p.stripeSessionId}
                   </td>
-                  
+
                 </tr>
               ))}
             </tbody>
