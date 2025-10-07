@@ -1,13 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-
-/**
- * TODO:
- * - Créer une session Stripe Checkout côté serveur
- * - Rediriger l'utilisateur vers l'URL de paiement
- * - Utiliser STRIPE_PRICE_ID si fourni, sinon un prix inline 19.99 EUR
- */
-export async function POST(_req: NextRequest) {
-  // TODO: implémenter l'appel Stripe
-  // return NextResponse.redirect(session.url!, { status: 303 });
-  return NextResponse.json({ error: "NOT_IMPLEMENTED" }, { status: 501 });
+import getStripe from "../../../lib/stripe";
+export async function POST(req: NextRequest) {
+  const stripe = getStripe();
+  const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/success`;
+  const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/cancel`;
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [{
+        price_data: {
+          currency: "eur",
+          product_data: { name: "Visionyze – Premium" },
+          unit_amount: 1999,
+        },
+        quantity: 1,
+      }],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    });
+    return NextResponse.json({ url: session.url });
+  } catch (err: any) {
+    console.error(err);
+    return NextResponse.json({ error: err?.message || "stripe_error" }, { status: 500 });
+  }
 }
